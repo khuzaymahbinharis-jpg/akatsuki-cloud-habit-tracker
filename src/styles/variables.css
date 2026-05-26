@@ -1,0 +1,70 @@
+:root {
+  /* ---------- Glassmorphism panel surface ---------- */
+  --glass-tint-top: rgba(232, 244, 252, 0.62);
+  --glass-tint-mid: rgba(204, 226, 244, 0.5);
+  --glass-tint-bot: rgba(184, 212, 236, 0.48);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-border-inner: rgba(255, 255, 255, 0.6);
+  --glass-edge-shade: rgba(120, 160, 200, 0.22);
+  --glass-blur: 26px;
+  --glass-saturation: 160%;
+  --glass-shadow:
+    0 22px 48px rgba(35, 75, 115, 0.22),
+    0 4px 14px rgba(35, 75, 115, 0.14),
+    0 0 0 0.5px rgba(255, 255, 255, 0.3);
+
+  /* ---------- Ink palette (text on the panel) ---------- */
+  --ink-strong: rgba(38, 70, 108, 0.96);
+  --ink-default: rgba(54, 92, 134, 0.94);
+  --ink-muted: rgba(76, 118, 162, 0.78);
+  --ink-faint: rgba(100, 142, 184, 0.62);
+  --ink-divider: rgba(180, 210, 235, 0.4);
+  --ink-soft-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+
+  /* ---------- Checkbox ---------- */
+  --check-bg-empty: rgba(255, 255, 255, 0.22);
+  --check-bg-filled: rgba(255, 255, 255, 0.94);
+  --check-border: rgba(255, 255, 255, 0.85);
+  --check-mark: rgba(48, 86, 130, 0.96);
+
+  /* ---------- Reset Day button ---------- */
+  --button-bg:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.42) 0%,
+      rgba(220, 236, 248, 0.22) 100%
+    );
+  --button-bg-hover:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.58) 0%,
+      rgba(220, 236, 248, 0.32) 100%
+    );
+  --button-border: rgba(255, 255, 255, 0.7);
+  --button-glow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 2px rgba(160, 198, 228, 0.3),
+    0 2px 8px rgba(50, 95, 140, 0.18);
+
+  /* ---------- Decorative cloud accents ---------- */
+  --decor-cloud-opacity: 0.42;
+
+  /* ---------- Layout ---------- */
+  --panel-radius: 24px;
+  --panel-padding: 22px 24px 16px;
+  --panel-offset-x: 48px;
+  --panel-offset-y: 48px;
+  --panel-min-width: 312px;
+  --panel-max-width: 340px;
+
+  /* ---------- Motion ---------- */
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --cloud-enter-duration: 620ms;
+
+  /* ---------- Type ---------- */
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --letter-spacing-title: 0.26em;
+  --letter-spacing-button: 0.2em;
+}
