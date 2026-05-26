@@ -1,0 +1,53 @@
+.cloud {
+  position: absolute;
+  width: 16vw;
+  max-width: 260px;
+  min-width: 130px;
+  pointer-events: none;
+  animation: cloud-fade-in var(--cloud-enter-duration) var(--ease-soft) both;
+  will-change: opacity, transform;
+}
+
+.transform {
+  transform-origin: center center;
+  animation: cloud-pop-in var(--cloud-enter-duration) var(--ease-soft) both;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* Soft outer glow so the cloud feels lit from above, not pasted on. */
+  filter:
+    drop-shadow(0 4px 14px rgba(120, 180, 220, 0.32))
+    drop-shadow(0 0 22px rgba(200, 230, 250, 0.18));
+}
+
+@keyframes cloud-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: var(--cloud-opacity, 1);
+  }
+}
+
+@keyframes cloud-pop-in {
+  from {
+    transform:
+      translate(-50%, -50%)
+      scale(calc(var(--cloud-scale, 1) * 0.62))
+      rotate(calc(var(--cloud-rotation, 0) * 1deg))
+      scaleX(var(--cloud-flip, 1));
+  }
+  to {
+    transform:
+      translate(-50%, -50%)
+      scale(var(--cloud-scale, 1))
+      rotate(calc(var(--cloud-rotation, 0) * 1deg))
+      scaleX(var(--cloud-flip, 1));
+  }
+}
