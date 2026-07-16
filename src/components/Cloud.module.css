@@ -8,6 +8,14 @@
   will-change: opacity, transform;
 }
 
+.standalone {
+  width: 90%;
+  max-width: none;
+  min-width: 0;
+  left: 50%;
+  top: 50%;
+}
+
 .transform {
   transform-origin: center center;
   animation: cloud-pop-in var(--cloud-enter-duration) var(--ease-soft) both;
