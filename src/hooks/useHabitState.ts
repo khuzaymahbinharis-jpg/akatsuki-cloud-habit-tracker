@@ -5,6 +5,17 @@ import { loadState, saveState } from "../lib/storage";
 import { todayKey } from "../lib/date";
 import { generateCloud } from "../lib/cloudPosition";
 
+function normalizeLabel(label: string): string {
+  return label.trim();
+}
+
+function createHabitId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `habit-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
 function seedState(): AppState {
   return {
     version: 1,
@@ -97,5 +108,42 @@ export function useHabitState() {
     }));
   }, []);
 
-  return { state, toggleHabit, resetDay };
+  const addHabit = useCallback((label: string) => {
+    const normalized = normalizeLabel(label);
+    if (!normalized) return;
+
+    setState((prev) => ({
+      ...prev,
+      habits: [
+        ...prev.habits,
+        {
+          id: createHabitId(),
+          label: normalized,
+          completed: false,
+          cloud: undefined,
+        },
+      ],
+    }));
+  }, []);
+
+  const updateHabitLabel = useCallback((id: string, nextLabel: string) => {
+    const normalized = normalizeLabel(nextLabel);
+    if (!normalized) return;
+
+    setState((prev) => ({
+      ...prev,
+      habits: prev.habits.map((habit) =>
+        habit.id === id ? { ...habit, label: normalized } : habit,
+      ),
+    }));
+  }, []);
+
+  const deleteHabit = useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      habits: prev.habits.filter((habit) => habit.id !== id),
+    }));
+  }, []);
+
+  return { state, toggleHabit, resetDay, addHabit, updateHabitLabel, deleteHabit };
 }
