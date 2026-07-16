@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Desktop widget permissions for habit panel and cloud windows",
+  "windows": ["habit-panel", "cloud-*"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-close",
+    "core:window:allow-set-position",
+    "core:window:allow-set-size",
+    "core:window:allow-set-ignore-cursor-events",
+    "core:webview:allow-create-webview-window",
+    "wallpaper:default"
+  ]
+}

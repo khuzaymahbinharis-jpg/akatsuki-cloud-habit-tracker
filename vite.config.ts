@@ -6,4 +6,11 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   base: "./",
   plugins: [react()],
+  // Prevent Vite from watching the Rust backend (avoids rebuild loops with Tauri).
+  server: {
+    watch: {
+      ignored: ["**/src-tauri/**"],
+    },
+  },
 });
+
