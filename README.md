@@ -1,137 +1,137 @@
 # Akatsuki Cloud Habit Tracker
 
-An interactive desktop wallpaper habit tracker. Built as a React + Vite + TypeScript web app and designed to run full-screen through [Lively Wallpaper](https://www.rocksdanister.com/lively/) on Windows.
+An interactive habit tracker with drifting decorative clouds. Built with React, Vite, TypeScript, and [Tauri](https://tauri.app/) on Windows.
 
-Tick off a habit, a stylized cloud drifts into the sky. Untick it, the cloud is gone. State persists in `localStorage` and resets each calendar day.
+**Primary experience:** Rainmeter-style **desktop widgets**. A glass habit panel and click-through cloud windows sit on your real Windows wallpaper (panel interactive; clouds behind desktop icons via WorkerW).
 
-## MVP Scope (Phase 1)
+**Backup / secondary:** Full-screen web layout in the browser, or the same page loaded as a [Lively Wallpaper](https://www.rocksdanister.com/lively/).
 
-- Full-screen anime sky background from `/public/wallpaper.png`
-- Glassmorphism habit panel in the bottom-left
-- Five default habits (Drink Water, Morning Stretch, Read 20 Min, No Screen 1hr, Sleep by 11pm)
-- Check / uncheck spawns or removes one decorative cloud
-- Cloud position, variant, scale, and rotation are saved with the habit
-- Daily reset on app load, on window focus, on `visibilitychange`, and as a guard before every toggle
-- Manual "Reset Day" button in the panel
-- Targets 1920x1080 first, degrades gracefully at smaller sizes
+Tick off a habit → a cloud appears. Untick → it disappears. State lives in `localStorage` and resets each calendar day.
 
-Out of scope for Phase 1: themes, multiple wallpapers, habit editing, streaks, settings panel.
+## Quick start (desktop widgets)
 
-## Getting Started
+**Prerequisites (one-time on Windows):**
 
-1. Place your wallpaper image at `public/wallpaper.png`.
-2. Place your stylized cloud PNG at `public/assets/cloud.png` (transparent background, ~1024px wide works well).
-3. Install dependencies:
+1. [Node.js](https://nodejs.org/) (LTS)
+2. [Rust](https://www.rust-lang.org/tools/install) via rustup
+3. [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) (“Desktop development with C++”)
+4. [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (usually already installed)
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+npm run tauri:dev
+```
 
-4. Run the dev server:
+You should see:
 
-   ```bash
-   npm run dev
-   ```
+- A transparent habit panel near the bottom-left (no taskbar button)
+- A tray icon: **Show Panel**, **Hide Panel**, **Re-attach Widgets**, **Quit**
+- Cloud widgets on the desktop when habits are completed (click-through)
 
-   Open the printed URL (usually `http://localhost:5173`) to test interactively.
+**Build / launch a release:**
 
-5. Build for production:
+```bash
+npm run tauri:build
+npm run start:desktop
+```
 
-   ```bash
-   npm run build
-   ```
+Installer: `src-tauri/target/release/bundle/nsis/Akatsuki Cloud Habit Tracker_0.1.0_x64-setup.exe`  
+App: `src-tauri/target/release/akatsuki-cloud-habit-tracker.exe`  
 
-   The output lands in `dist/`. The Vite `base` is set to `./` so the build works both from a server and when opened directly from disk.
+Do not open the `.exe` inside the editor — run it from File Explorer or `npm run start:desktop`.
 
-## Using It as a Lively Wallpaper
+### Desktop limitations
 
-1. Run `npm run build`.
-2. In Lively Wallpaper, choose **Add Wallpaper** -> **Browse** and pick `dist/index.html`.
-3. Lively will load the page full-screen as your desktop wallpaper. Interactions (clicks on the habit panel) are forwarded to the page when "Input Forwarding" is enabled in Lively.
-4. Re-run `npm run build` after any code change. Lively reloads from disk.
+- Windows only (WorkerW / wallpaper-layer APIs)
+- Wallpaper or theme changes can briefly detach cloud widgets — use tray **Re-attach Widgets**, or wait for auto re-attach (~45s)
+- v1 targets the **primary monitor** only
 
-For iteration speed, you can instead point Lively at the dev server URL while `npm run dev` is running.
+## Features
 
-## Project Structure
+- Glassmorphism habit panel with edit mode (add / rename / delete habits)
+- Five default habits to start
+- One decorative cloud per completed habit (position, scale, rotation persisted)
+- Daily reset on load, focus, visibility change, and before each toggle
+- Manual **Reset Day**
+- System tray for a taskbar-free desktop app
+
+## Backup: web UI & Lively Wallpaper
+
+The original full-page sky + panel still works for browser testing and as a Lively live wallpaper if you prefer everything in one HTML page.
+
+1. Put art at `public/assets/wallpaper.png` and `public/assets/cloud.png`
+2. `npm install` then `npm run dev` (browser) or `npm run build` (for Lively)
+
+**Lively:**
+
+1. `npm run build`
+2. Lively → **Add Wallpaper** → **Browse** → `dist/index.html`
+3. Enable **Input Forwarding**
+4. Rebuild after code changes (or point Lively at `http://localhost:5173` while `npm run dev` runs)
+
+Vite `base` is `./` so `dist/` works from disk under Lively.
+
+## Project structure
 
 ```text
 src/
-├── components/
-│   ├── Wallpaper.tsx          # full-screen background image
-│   ├── CloudLayer.tsx         # absolute layer holding all clouds
-│   ├── Cloud.tsx              # renders cloud.png with per-instance variation
-│   ├── HabitPanel.tsx         # glassmorphism panel with decor + reset
-│   └── HabitItem.tsx          # one checkbox row with icon
-├── hooks/
-│   └── useHabitState.ts       # central state, persistence, daily reset
+├── components/          # Panel, clouds, wallpaper (web/Lively)
+├── hooks/useHabitState.ts
 ├── lib/
-│   ├── storage.ts             # versioned localStorage load / save
-│   ├── date.ts                # local todayKey() / isNewDay()
-│   └── cloudPosition.ts       # sky-zone random pos + exclusion rects
-├── config/
-│   └── defaultHabits.ts       # five seed habits with stable ids
-├── types/
-│   └── habit.ts               # Habit, CloudInstance, AppState
-├── styles/
-│   ├── variables.css          # design tokens (colors, blur, motion)
-│   └── global.css             # reset and body defaults
-├── App.tsx
-└── main.tsx
+│   ├── desktop.ts       # Tauri window-mode helpers
+│   ├── tauriBridge.ts   # sync_cloud_windows / reattach
+│   └── …                # storage, date, cloud positions
+├── App.tsx              # Routes: panel widget | cloud widget | web/Lively
+└── …
+
+src-tauri/               # Tauri shell: tray, cloud HWNDs, WorkerW attach
+scripts/                 # PATH-safe tauri runners + start:desktop
+docs/archive/            # Abandoned approaches (historical)
 ```
 
-## Data Model
+## Data model
 
 ```ts
 type CloudInstance = {
-  x: number;          // 0-100 (percent of viewport width)
-  y: number;          // 0-100 (percent of viewport height)
-  variant: number;    // discrete seed (reserved for future asset sets)
-  scale: number;      // 0.7 - 1.4
-  rotation: number;   // -14 - 14 degrees
-  opacity?: number;   // 0.62 - 0.95
-  flipped?: boolean;  // horizontally mirrored
+  x: number;          // 0–100 (% of primary screen)
+  y: number;
+  variant: number;
+  scale: number;      // 0.7–1.4
+  rotation: number;
+  opacity?: number;
+  flipped?: boolean;
 };
 
 type Habit = {
   id: string;
   label: string;
   completed: boolean;
-  cloud?: CloudInstance; // present iff completed
+  cloud?: CloudInstance;
 };
 
 type AppState = {
   version: 1;
-  date: string;     // "YYYY-MM-DD" local
+  date: string;       // YYYY-MM-DD local
   habits: Habit[];
 };
 ```
 
-Stored under the single key `habit-wallpaper:state`.
-
-## Cloud Spawning
-
-`src/lib/cloudPosition.ts` defines:
-
-- A **sky zone** the upper portion of the viewport where clouds may appear.
-- **Exclusion rectangles** for the house / arch (right side of the wallpaper) and the habit panel (bottom-left).
-- A **minimum distance** between clouds; the algorithm retries random positions until it finds one that fits, falling back to the best candidate otherwise.
-
-To re-tune for a different wallpaper, edit `SKY_ZONE`, `HOUSE_EXCLUSION`, `PANEL_EXCLUSION`, and `MIN_CLOUD_DISTANCE` at the top of the file.
-
-## Daily Reset
-
-The reset runs in four places, all comparing the stored `state.date` to today's local date (`YYYY-MM-DD`):
-
-1. Lazy initial state on first render (`initialState()`).
-2. On `window` `focus`.
-3. On `document` `visibilitychange` when the document becomes visible.
-4. Inside `toggleHabit`, as a guard before the toggle is applied.
-
-There is no background timer, so a wallpaper that runs unattended past midnight will catch up the moment you interact or refocus it.
+Stored under `habit-wallpaper:state`.
 
 ## Scripts
 
-- `npm run dev` start Vite dev server.
-- `npm run build` typecheck + production build into `dist/`.
-- `npm run preview` serve the built `dist/` locally.
-- `npm run lint` ESLint over the project.
+| Script | Purpose |
+|--------|---------|
+| `npm run tauri:dev` | **Main** — desktop widgets (dev) |
+| `npm run tauri:build` | Windows NSIS installer + release exe |
+| `npm run start:desktop` | Launch built release exe |
+| `npm run dev` | Backup — Vite browser / Lively URL |
+| `npm run build` | Backup — static `dist/` for Lively |
+| `npm run preview` | Serve `dist/` |
+| `npm run lint` | ESLint |
+
+## Design history
+
+We briefly tried a **full-window Tauri app** that redrew the entire wallpaper inside one window. That did not match the “widget on my desktop” goal and was abandoned. Notes: [docs/archive/FULL_WINDOW_DESKTOP.md](docs/archive/FULL_WINDOW_DESKTOP.md).
+
+Lively remains supported as a **backup** path for a single full-bleed page, not as the primary shipping mode.
